@@ -35,4 +35,19 @@ export class TasksService {
     this.tasks.splice(taskIndex, 1);
     return task;
   }
+
+  updateTaskStatus(id: string, newStatus: TaskStatus): Task {
+    const taskToUpdate = this.getTaskById(id);
+
+    const isNewStatusString = !newStatus || typeof newStatus !== 'string';
+    const isNewStatusValid = !Object.values(TaskStatus).includes(newStatus);
+
+    if (isNewStatusString || isNewStatusValid || !taskToUpdate) {
+      return null;
+    }
+
+    taskToUpdate.status = newStatus;
+
+    return taskToUpdate;
+  }
 }
