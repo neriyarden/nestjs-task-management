@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { Task } from './task.model';
 import { TasksService } from './tasks.service';
@@ -8,8 +19,13 @@ export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get()
-  getAllTasks(): Task[] {
+  getTasks(@Query() getTasksFilterDto: GetTasksFilterDto): Task[] {
+    const areAnyFiltersProvided = Object.keys(getTasksFilterDto).length;
+    if (areAnyFiltersProvided) {
+      return this.tasksService.getTasksWithFilters(getTasksFilterDto);
+    } else {
     return this.tasksService.getAllTasks();
+    }
   }
 
   @Get(':id')
@@ -18,6 +34,7 @@ export class TasksController {
   }
 
   @Post()
+  @UsePipes(ValidationPipe)
   createTask(@Body() createTaskDto: CreateTaskDto): Task {
     return this.tasksService.createTask(createTaskDto);
   }
